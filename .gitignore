@@ -1,4 +1,5 @@
 # Visual Studio
+.chgit/
 bin/
 obj/
 .vs/
