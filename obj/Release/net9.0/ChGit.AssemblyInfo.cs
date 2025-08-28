@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ChGit")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+57b6628daaffe8335f1cb0e38059fc7850a269b2")]
 [assembly: System.Reflection.AssemblyProductAttribute("ChGit")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ChGit")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

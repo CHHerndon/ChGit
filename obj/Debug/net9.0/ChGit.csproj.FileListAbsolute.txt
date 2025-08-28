@@ -12,3 +12,4 @@ E:\ChGit\obj\Debug\net9.0\refint\ChGit.dll
 E:\ChGit\obj\Debug\net9.0\ChGit.pdb
 E:\ChGit\obj\Debug\net9.0\ChGit.genruntimeconfig.cache
 E:\ChGit\obj\Debug\net9.0\ref\ChGit.dll
+E:\ChGit\obj\Debug\net9.0\ChGit.sourcelink.json
