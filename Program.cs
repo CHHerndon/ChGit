@@ -53,6 +53,19 @@ namespace ChGit
                     Log();
                     break;
 
+                case "checkout":
+                    if (args.Length < 2)
+                    {
+                        //Missing name of file
+                        Console.WriteLine("Usage: chgit checkout <commitHash>");
+                    }
+                    else
+                    {
+                        //All good pass file name to method
+                        Checkout(args[1]);
+                    }
+                    break;
+
                 default:
                     Console.WriteLine($"Unknown command: {command}");
                     break;
@@ -244,6 +257,61 @@ namespace ChGit
                 Console.WriteLine(date);
                 Console.WriteLine(message);
             }
+        }
+
+        static void Checkout(string commitHash)
+        {
+            if (!Directory.Exists(".chgit"))
+            {
+                Console.WriteLine("Repository not initialized. Please run 'chgit init' first.");
+                return;
+            }
+
+            string commitPath = Path.Combine(".chgit", "commits", commitHash);
+
+            if (File.Exists(commitPath))
+            {
+                List<string> fileNames = new List<string>();
+                List<string> fileHashes = new List<string>();
+
+                //parse the files here
+                string[] commitContent = File.ReadAllLines(commitPath);
+
+                for(int i = 4; i < commitContent.Count(); i++)
+                {
+                    //gets the file names and hashes here
+                    string[] lineContent = commitContent[i].Split('\t');
+
+                    fileNames.Add(lineContent[0]);
+                    fileHashes.Add(lineContent[1]);
+                }
+
+                for (int i = 0; i < fileNames.Count(); i++)
+                {
+                    //get file from hash
+                    string objectPath = Path.Combine(".chgit", "objects", fileHashes[i]);
+
+                    string? targetDir = Path.GetDirectoryName(fileNames[i]);
+                    if (!string.IsNullOrEmpty(targetDir) && !Directory.Exists(targetDir))
+                    {
+                        Directory.CreateDirectory(targetDir);
+                    }
+
+                    //restore file
+                    byte[] blobBytes = File.ReadAllBytes(objectPath);
+                    File.WriteAllBytes(fileNames[i], blobBytes);
+
+                    Console.WriteLine($"Restored {fileNames[i]}");
+                }
+
+                Console.WriteLine("Checkout Complete");
+
+            }
+            else
+            {
+                Console.WriteLine("no hash match");
+            }
+
         }
 
     }
