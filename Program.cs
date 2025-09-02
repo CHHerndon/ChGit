@@ -40,14 +40,17 @@ namespace ChGit
                     if (args.Length < 3 || args[1] != "-m")
                     {
                         //Incorrect format
-                        Console.WriteLine("Usage: chgit commit -m '"'Commit Description'"'");
+                        Console.WriteLine("Usage: chgit commit -m \"Commit Description\"");
+                        break;
                     }
-                    else
-                    {
-                        //All good pass message to commit
-                        string message = string.Join(" ", args.Skip(2));
-                        Commit(message);
-                    }
+
+                    //All good pass message to commit
+                    string message = string.Join(" ", args.Skip(2));
+                    Commit(message);
+                    break;
+
+                case "log":
+                    Log();
                     break;
 
                 default:
@@ -170,7 +173,7 @@ namespace ChGit
             string indexPath = Path.Combine(".chgit", "index");
             if (!File.Exists(indexPath))
             {
-                Console.WriteLine("Nothing to commit. Please run 'chgit commit -m '"'Commit Description'"' first.");
+                Console.WriteLine("Nothing to commit. Please run 'chgit commit -m \"Commit Description\" first.");
                 return;
             }
 
@@ -184,9 +187,9 @@ namespace ChGit
 
             //previous commit hash
             string headPath = Path.Combine(".chgit", "HEAD");
-            string prevCommitHash = null;
+            string? prevCommitHash = null;
 
-            if (File.Exists(headPath) && File.ReadLines(headPath).Length > 0)
+            if (File.Exists(headPath) && File.ReadLines(headPath).Any())
             {
                 prevCommitHash = File.ReadLines(headPath).Last();
             }
@@ -194,7 +197,7 @@ namespace ChGit
             //Build commit data
             StringBuilder commitContent = new StringBuilder();
             commitContent.AppendLine("parent: " + (prevCommitHash ?? ""));
-            commitContent.AppendLine("date: " + DateTime.UtcNow.ToString("o"));
+            commitContent.AppendLine("date: " + DateTime.Now.ToString());
             commitContent.AppendLine("message: " + message);
             commitContent.AppendLine("files:");
             foreach (string line in indexLines)
