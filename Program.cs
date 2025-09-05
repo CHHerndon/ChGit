@@ -3,12 +3,26 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
+// This program is designed to be a lightweight Git-like version control system written in C#.
+// Made by Charlie Herndon
+
+// Current Commands:
+// init – Initialize a new ChGit repository
+// add < file > – Stage a file (stores content by SHA-256 hash)
+// commit -m "message" – Create a commit snapshot with message + parent
+// log – View commit history (newest → oldest)
+// checkout <hash> – Restore files from a previous commit
+
+// Note:
+// The HEAD file currently works as a commit history and isn't only the newest commit, newest commit is at the bottom
+
 namespace ChGit
 {
     class Program
     {
         static void Main(string[] args)
         {
+            //empty command
             if (args.Length == 0)
             {
                 Console.WriteLine("Usage: chgit <command> [options]");
@@ -31,7 +45,7 @@ namespace ChGit
                     }
                     else
                     {
-                        //All good pass file name to method
+                        //All good pass file name to add file
                         AddFile(args[1]);
                     }
                     break;
@@ -61,7 +75,7 @@ namespace ChGit
                     }
                     else
                     {
-                        //All good pass file name to method
+                        //All good pass file name to checkout
                         Checkout(args[1]);
                     }
                     break;
@@ -74,6 +88,7 @@ namespace ChGit
 
         static void InitRepo()
         {
+            //forming the repository path
             string repoPath = Path.Combine(Directory.GetCurrentDirectory(), ".chgit");
             string objectsPath = Path.Combine(repoPath, "objects");
             string commitsPath = Path.Combine(repoPath, "commits");
@@ -85,11 +100,11 @@ namespace ChGit
                 return;
             }
 
-            //Create directories
+            //create directories
             Directory.CreateDirectory(objectsPath);
             Directory.CreateDirectory(commitsPath);
 
-            //Create HEAD file
+            //create HEAD file
             File.WriteAllText(headPath, string.Empty);
 
             Console.WriteLine("Initialized empty ChGit repository in " + repoPath);
@@ -103,18 +118,18 @@ namespace ChGit
                 return;
             }
 
-            //Reading File
+            //reading file
             byte[] fileContent = File.ReadAllBytes(fileName);
 
             //HASHING
             using (SHA256 sha = SHA256.Create())
             {
+                //creates hash and removes the dashes from the byte array for git like formatting
                 byte[] hashBytes = sha.ComputeHash(fileContent);
                 string hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
 
                 //makes sure init has been done first
                 string objectsPath = Path.Combine(".chgit", "objects");
-
                 if (!Directory.Exists(objectsPath))
                 {
                     Console.WriteLine("Repository not initialized. Please run 'chgit init' first.");
@@ -135,7 +150,6 @@ namespace ChGit
 
                 //writing to index file
                 string indexPath = Path.Combine(".chgit", "index");
-
                 if (!File.Exists(indexPath))
                 {
                     File.WriteAllText(indexPath, fileName + "\t" + hash);
@@ -148,6 +162,7 @@ namespace ChGit
 
                     bool noMatch = true;
 
+                    //checks if the file is already stored in the index if matches updates the files hash
                     foreach (string line in lines)
                     {
                         string[] indexFileName = line.Split('\t');
@@ -209,10 +224,10 @@ namespace ChGit
 
             //Build commit data
             StringBuilder commitContent = new StringBuilder();
-            commitContent.AppendLine("parent: " + (prevCommitHash ?? ""));
-            commitContent.AppendLine("date: " + DateTime.Now.ToString());
-            commitContent.AppendLine("message: " + message);
-            commitContent.AppendLine("files:");
+            commitContent.AppendLine("Parent: " + (prevCommitHash ?? ""));
+            commitContent.AppendLine("Date: " + DateTime.Now.ToString());
+            commitContent.AppendLine("Message: " + message);
+            commitContent.AppendLine("Files:");
             foreach (string line in indexLines)
             {
                 commitContent.AppendLine(line);
@@ -234,6 +249,12 @@ namespace ChGit
             File.AppendAllText(headPath, commitHash + "\n");
 
             Console.WriteLine($"Committed as {commitHash}");
+
+            //clears index
+            if (File.Exists(indexPath))
+            {
+                File.WriteAllText(indexPath, string.Empty);
+            }
         }
 
         static void Log()
@@ -253,9 +274,9 @@ namespace ChGit
                 string date = commitContent[1];
                 string message = commitContent[2];
 
-                Console.WriteLine("commit: " + commitHash);
+                Console.WriteLine("Commit: " + commitHash);
                 Console.WriteLine(date);
-                Console.WriteLine(message);
+                Console.WriteLine(message + "\n");
             }
         }
 
@@ -309,7 +330,7 @@ namespace ChGit
             }
             else
             {
-                Console.WriteLine("no hash match");
+                Console.WriteLine("No hash match.");
             }
 
         }
