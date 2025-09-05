@@ -44,3 +44,11 @@ dotnet run -- checkout <commitHash>
 - Commits in `.chgit/commits/` hold message, parent, and file list  
 - `HEAD` tracks commit history (latest at bottom)
 
+## 🎯 Why I Built This
+I created ChGit as a learning project to better understand how real version control systems like Git work under the hood.  
+
+This project helped me practice:
+- Using SHA-256 hashing to identify and store file content
+- Designing a simple CLI tool in C#
+- Implementing commit history and file restoration
+- Managing staged vs committed changes through an index
